@@ -34,8 +34,11 @@ async def clear_cart(token: str) -> None:
 
 async def check_stock(items: list[dict], token: str) -> list[dict]:
     response = await _request(
-        "POST", f"{CATALOG_URL}/api/internal/stock/check", token,
-        "Catalog service", json=items,
+        "POST",
+        f"{CATALOG_URL}/api/internal/stock/check",
+        token,
+        "Catalog service",
+        json=items,
     )
     if response.status_code != 200:
         raise HTTPException(status_code=502, detail="Catalog service error")
@@ -44,16 +47,22 @@ async def check_stock(items: list[dict], token: str) -> list[dict]:
 
 async def decrement_stock(items: list[dict], token: str) -> bool:
     response = await _request(
-        "POST", f"{CATALOG_URL}/api/internal/stock/decrement", token,
-        "Catalog service", json=items,
+        "POST",
+        f"{CATALOG_URL}/api/internal/stock/decrement",
+        token,
+        "Catalog service",
+        json=items,
     )
     return response.status_code == 200
 
 
 async def charge(payload: dict, token: str) -> dict:
     response = await _request(
-        "POST", f"{PAYMENT_URL}/api/payments/charge", token,
-        "Payment service", json=payload,
+        "POST",
+        f"{PAYMENT_URL}/api/payments/charge",
+        token,
+        "Payment service",
+        json=payload,
     )
     if response.status_code != 200:
         raise HTTPException(status_code=502, detail="Payment service error")

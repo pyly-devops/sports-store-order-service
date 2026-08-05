@@ -55,9 +55,11 @@ def setup_mocks(mock_clients, mock_counters, mock_orders, payment_status="succee
 
 
 def test_checkout_happy_path(client, auth_headers):
-    with patch("orchestrator.clients") as mock_clients, \
-         patch("orchestrator.counters_collection") as mock_counters, \
-         patch("orchestrator.orders_collection") as mock_orders:
+    with (
+        patch("orchestrator.clients") as mock_clients,
+        patch("orchestrator.counters_collection") as mock_counters,
+        patch("orchestrator.orders_collection") as mock_orders,
+    ):
         setup_mocks(mock_clients, mock_counters, mock_orders)
         response = client.post(
             "/api/orders/checkout", json=CHECKOUT_PAYLOAD, headers=auth_headers
@@ -84,11 +86,12 @@ def test_checkout_happy_path(client, auth_headers):
 
 
 def test_checkout_payment_failure_402(client, auth_headers):
-    with patch("orchestrator.clients") as mock_clients, \
-         patch("orchestrator.counters_collection") as mock_counters, \
-         patch("orchestrator.orders_collection") as mock_orders:
-        setup_mocks(mock_clients, mock_counters, mock_orders,
-                    payment_status="failed")
+    with (
+        patch("orchestrator.clients") as mock_clients,
+        patch("orchestrator.counters_collection") as mock_counters,
+        patch("orchestrator.orders_collection") as mock_orders,
+    ):
+        setup_mocks(mock_clients, mock_counters, mock_orders, payment_status="failed")
         response = client.post(
             "/api/orders/checkout", json=CHECKOUT_PAYLOAD, headers=auth_headers
         )
@@ -100,9 +103,11 @@ def test_checkout_payment_failure_402(client, auth_headers):
 
 
 def test_checkout_empty_cart_400(client, auth_headers):
-    with patch("orchestrator.clients") as mock_clients, \
-         patch("orchestrator.counters_collection"), \
-         patch("orchestrator.orders_collection") as mock_orders:
+    with (
+        patch("orchestrator.clients") as mock_clients,
+        patch("orchestrator.counters_collection"),
+        patch("orchestrator.orders_collection") as mock_orders,
+    ):
         mock_clients.get_cart = AsyncMock(return_value={"items": [], "subtotal": 0})
         mock_orders.insert_one = AsyncMock()
         response = client.post(
@@ -114,9 +119,11 @@ def test_checkout_empty_cart_400(client, auth_headers):
 
 
 def test_checkout_out_of_stock_409(client, auth_headers):
-    with patch("orchestrator.clients") as mock_clients, \
-         patch("orchestrator.counters_collection"), \
-         patch("orchestrator.orders_collection") as mock_orders:
+    with (
+        patch("orchestrator.clients") as mock_clients,
+        patch("orchestrator.counters_collection"),
+        patch("orchestrator.orders_collection") as mock_orders,
+    ):
         mock_clients.get_cart = AsyncMock(return_value=CART)
         mock_clients.check_stock = AsyncMock(
             return_value=[{"sku": "VR-BLK-42", "available": 1, "in_stock": False}]
@@ -136,9 +143,11 @@ def test_checkout_shipping_added_below_threshold(client, auth_headers):
         "items": [dict(CART["items"][0], quantity=1, unit_price=49.99)],
         "subtotal": 49.99,
     }
-    with patch("orchestrator.clients") as mock_clients, \
-         patch("orchestrator.counters_collection") as mock_counters, \
-         patch("orchestrator.orders_collection") as mock_orders:
+    with (
+        patch("orchestrator.clients") as mock_clients,
+        patch("orchestrator.counters_collection") as mock_counters,
+        patch("orchestrator.orders_collection") as mock_orders,
+    ):
         setup_mocks(mock_clients, mock_counters, mock_orders)
         mock_clients.get_cart = AsyncMock(return_value=small_cart)
         response = client.post(
